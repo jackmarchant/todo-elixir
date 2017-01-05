@@ -1,26 +1,25 @@
 defmodule Todo.Api do
   use Maru.Router
-  alias Todo.AgentWorker, as: Store
 
   namespace :tasks do
 
       desc "get all tasks"
-        get do Store.get |> json
+        get do Todo.AgentWorker.get |> json
       end
 
       desc "creates a task"
-        params do
+      params do
         requires :description, type: String
         requires :completed, type: Boolean, default: false
       end
 
-      post do Store.insert(params) |> json
+      post do Todo.AgentWorker.insert(params) |> json
       end
 
       route_param :id do
        desc "get a task by id"
        get do
-        Store.get(params[:id]) |> json
+        Todo.AgentWorker.get(params[:id]) |> json
       end
 
       desc "updates a task"
@@ -31,16 +30,17 @@ defmodule Todo.Api do
       end
 
       put do
-        Store.update(params) |> json
+        Todo.AgentWorker.update(params) |> json
       end
 
       desc "deletes a task"
-       delete do Store.delete(params[:id]) |> json
+       delete do
+        Todo.AgentWorker.delete(params[:id]) |> json
       end
     end
   end
 
-  def error(conn, _e) do
-   %{error: _e} |> json
+  def error(conn, e) do
+   %{error: e} |> json
   end
 end
